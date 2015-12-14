@@ -11,23 +11,29 @@ include $(INCLUDE_DIR)/package.mk
 define Package/freifunk-berlin-meta/Default
   SECTION:=freifunk-berlin
   CATEGORY:=freifunk-berlin
-  TITLE:=Freifunk Berlin meta packages
+  TITLE:=Freifunk Berlin meta-package
   URL:=http://github.com/freifunk-berlin/packages_berlin
   DEPENDS+= +hostapd
 endef
 
 define Package/freifunk-berlin-meta/description/Default
-  Freifunk Berlin configuration files for firewall
+  Freifunk Berlin meta-package for basic dependencies
 endef
 
 define Package/freifunk-berlin-meta-default4MB
 $(call Package/freifunk-berlin-meta/Default)
-  TITLE+= (default4MB)
-  DEPENDS:= +wpad \
-            +luci-app-ffwizard-berlin \
-            +freifunk-berlin-openvpn-files \
-            +freifunk-berlin-olsrd-defaults +olsrd-mod-arprefresh +olsrd-mod-dyn-gw \
-            +olsrd-mod-jsoninfo +olsrd-mod-nameservice
+  TITLE+= (FF-Node 4MB-Flash)
+  DEPENDS+= +wpad +libiwinfo-lua \
+            +luci-theme-bootstrap +uhttpd-mod-ubus +freifunk-berlin-uhttpd-defaults \
+            +luci-app-ffwizard-berlin +community-profiles \
+            +freifunk-berlin-dhcp-defaults +freifunk-berlin-firewall-defaults +freifunk-berlin-network-defaults \
+            +freifunk-berlin-migration \
+            +freifunk-berlin-olsrd-defaults +olsrd-mod-arprefresh +olsrd-mod-dyn-gw +luci-app-olsr-services \
+            +olsrd-mod-jsoninfo +olsrd-mod-nameservice \
+            +freifunk-berlin-openvpn-files +openvpn-polarssl \
+            +dnsmasq +qos-scripts \
+            +luci-app-owm +luci-app-owm-cmd \
+            +freifunk-berlin-freifunk-defaults
 endef
 
 define Package/freifunk-berlin-meta-default4MB/description
@@ -37,17 +43,19 @@ endef
 
 define Package/freifunk-berlin-meta-default
 $(call Package/freifunk-berlin-meta/Default)
-  TITLE+= (default)
-  DEPENDS:= +freifunk-berlin-meta-default4MB \
+  TITLE+= (FF-Node)
+  DEPENDS+= +freifunk-berlin-meta-default4MB \
             +olsrd-mod-txtinfo +olsrd-mod-watchdog \
             +freifunk-watchdog \
-            +freifunk-berlin-statistics-defaults
+            +freifunk-berlin-statistics-defaults \
+            +collectd-mod-interface +collectd-mod-iwinfo +collectd-mod-network +collectd-mod-olsrd \
+            +collectd-mod-rrdtool +collectd-mod-ping +collectd-mod-uptime +collectd-mod-memory \
+            +batctl +alfred
 endef
 
 define Package/freifunk-berlin-meta-default/description
 $(call Package/freifunk-berlin-meta/description/Default)
-  This meta-package contains only dependencies for a minimal IKEv2 setup.
-  Freifunk Berlin default router
+  Freifunk Berlin default router with 8+MB flash
 endef
 
 define Build/Prepare
@@ -55,15 +63,18 @@ define Build/Prepare
 endef
 
 define Build/Configure
+	true
 endef
 
 define Build/Compile
+	true
 endef
 
-#define Package/freifunk-berlin-firewall-defaults/install
+define Package/freifunk-berlin-meta-default/install
+	true
 #	$(INSTALL_DIR) $(1)/etc/uci-defaults
 #	$(CP) ./uci-defaults/* $(1)/etc/uci-defaults
-#endef
+endef
 
 $(eval $(call BuildPackage,freifunk-berlin-meta-default))
 $(eval $(call BuildPackage,freifunk-berlin-meta-default4MB))
