@@ -1,8 +1,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=freifunk-berlin-meta
-PKG_VERSION:=0.0.1
-PKG_RELEASE:=1
+PKG_VERSION:=0.0.0
+PKG_RELEASE:=3
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
@@ -13,17 +13,14 @@ define Package/freifunk-berlin-meta/Default
   CATEGORY:=freifunk-berlin
   TITLE:=Freifunk Berlin meta-package
   URL:=http://github.com/freifunk-berlin/packages_berlin
-  DEPENDS+= +hostapd
+#  DEPENDS+= +hostapd
 endef
 
 define Package/freifunk-berlin-meta/description/Default
   Freifunk Berlin meta-package for basic dependencies
 endef
 
-define Package/freifunk-berlin-meta-default4MB
-$(call Package/freifunk-berlin-meta/Default)
-  TITLE+= (FF-Node 4MB-Flash)
-  DEPENDS+= +wpad +libiwinfo-lua \
+COMMON_MINIMAL=+libiwinfo-lua \
             +luci-theme-bootstrap +uhttpd-mod-ubus +freifunk-berlin-uhttpd-defaults \
             +luci-app-ffwizard-berlin +community-profiles \
             +freifunk-berlin-dhcp-defaults +freifunk-berlin-firewall-defaults +freifunk-berlin-network-defaults \
@@ -34,6 +31,11 @@ $(call Package/freifunk-berlin-meta/Default)
             +dnsmasq +qos-scripts \
             +luci-app-owm +luci-app-owm-cmd \
             +freifunk-berlin-freifunk-defaults
+
+define Package/freifunk-berlin-meta-default4MB
+$(call Package/freifunk-berlin-meta/Default)
+  TITLE+= (FF-Node 4MB-Flash)
+  DEPENDS+= +wpad $(COMMON_MINIMAL)
 endef
 
 define Package/freifunk-berlin-meta-default4MB/description
@@ -44,10 +46,10 @@ endef
 define Package/freifunk-berlin-meta-default
 $(call Package/freifunk-berlin-meta/Default)
   TITLE+= (FF-Node)
-  DEPENDS+= +freifunk-berlin-meta-default4MB \
+  DEPENDS+= $(COMMON_MINIMAL) +hostapd \
             +olsrd-mod-txtinfo +olsrd-mod-watchdog \
             +freifunk-watchdog \
-            +freifunk-berlin-statistics-defaults \
+            +freifunk-berlin-statistics-defaults +luci-i18n-statistics-de \
             +collectd-mod-interface +collectd-mod-iwinfo +collectd-mod-network +collectd-mod-olsrd \
             +collectd-mod-rrdtool +collectd-mod-ping +collectd-mod-uptime +collectd-mod-memory \
             +batctl +alfred
