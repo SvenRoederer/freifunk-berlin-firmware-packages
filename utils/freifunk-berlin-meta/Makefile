@@ -60,16 +60,23 @@ $(call Package/freifunk-berlin-meta/Default/description)
   Freifunk Berlin default router with 8+MB flash
 endef
 
+FF_BERLIN_DIR=$(PKG_BUILD_DIR)/files/freifunk-berlin
+
 define Build/Prepare
 	mkdir -p $(PKG_BUILD_DIR)
-endef
-
-define Build/Configure
-	true
+	mkdir -p $(PKG_BUILD_DIR)/files
+	git clone https://github.com/freifunk-berlin/firmware.git $(FF_BERLIN_DIR)
 endef
 
 define Build/Compile
+	cp $(TOPDIR)/package/base-files/files/etc/banner $(PKG_BUILD_DIR)/files
+	patch -d $(PKG_BUILD_DIR)/files -p5 < $(FF_BERLIN_DIR)/patches/002-banner-info.patch
+endef
+
+define Package/freifunk-berlin-meta-default4MB/install
 	true
+#	$(INSTALL_DIR) $(1)/etc/uci-defaults
+#	$(CP) ./uci-defaults/* $(1)/etc/uci-defaults
 endef
 
 define Package/freifunk-berlin-meta-default/install
