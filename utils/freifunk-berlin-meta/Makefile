@@ -2,9 +2,9 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=freifunk-berlin-meta
 PKG_VERSION:=0.0.0
-PKG_RELEASE:=3
+PKG_RELEASE:=1
 
-PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
+PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -16,7 +16,7 @@ define Package/freifunk-berlin-meta/Default
 #  DEPENDS+= +hostapd
 endef
 
-define Package/freifunk-berlin-meta/description/Default
+define Package/freifunk-berlin-meta/Default/description
   Freifunk Berlin meta-package for basic dependencies
 endef
 
@@ -39,7 +39,7 @@ $(call Package/freifunk-berlin-meta/Default)
 endef
 
 define Package/freifunk-berlin-meta-default4MB/description
-$(call Package/freifunk-berlin-meta/description/Default)
+$(call Package/freifunk-berlin-meta/Default/description)
   Freifunk Berlin default router with only 4MB flash
 endef
 
@@ -56,7 +56,7 @@ $(call Package/freifunk-berlin-meta/Default)
 endef
 
 define Package/freifunk-berlin-meta-default/description
-$(call Package/freifunk-berlin-meta/description/Default)
+$(call Package/freifunk-berlin-meta/Default/description)
   Freifunk Berlin default router with 8+MB flash
 endef
 
