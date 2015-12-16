@@ -13,7 +13,12 @@ define Package/freifunk-berlin-meta/Default
   CATEGORY:=freifunk-berlin
   TITLE:=Freifunk Berlin meta-package
   URL:=http://github.com/freifunk-berlin/packages_berlin
-#  DEPENDS+= +hostapd
+  DEPENDS:= +freifunk-berlin-dhcp-defaults \
+            +freifunk-berlin-freifunk-defaults \
+            +freifunk-berlin-network-defaults \
+            +freifunk-berlin-olsrd-defaults \
+            +freifunk-berlin-statistics-defaults \
+            +freifunk-berlin-uhttpd-defaults
 endef
 
 define Package/freifunk-berlin-meta/Default/description
@@ -21,21 +26,20 @@ define Package/freifunk-berlin-meta/Default/description
 endef
 
 COMMON_MINIMAL=+libiwinfo-lua \
-            +luci-theme-bootstrap +uhttpd-mod-ubus +freifunk-berlin-uhttpd-defaults \
+            +luci-theme-bootstrap +uhttpd-mod-ubus \
             +luci-app-ffwizard-berlin +community-profiles \
-            +freifunk-berlin-dhcp-defaults +freifunk-berlin-firewall-defaults +freifunk-berlin-network-defaults \
+            +freifunk-berlin-firewall-defaults \
             +freifunk-berlin-migration \
-            +freifunk-berlin-olsrd-defaults +olsrd-mod-arprefresh +olsrd-mod-dyn-gw +luci-app-olsr-services \
+            +olsrd-mod-arprefresh +olsrd-mod-dyn-gw +luci-app-olsr-services \
             +olsrd-mod-jsoninfo +olsrd-mod-nameservice \
             +freifunk-berlin-openvpn-files +openvpn-polarssl \
             +dnsmasq +qos-scripts \
-            +luci-app-owm +luci-app-owm-cmd \
-            +freifunk-berlin-freifunk-defaults
+            +luci-app-owm +luci-app-owm-cmd
 
 define Package/freifunk-berlin-meta-default4MB
 $(call Package/freifunk-berlin-meta/Default)
   TITLE+= (FF-Node 4MB-Flash)
-  DEPENDS+= +wpad $(COMMON_MINIMAL)
+  DEPENDS+= $(COMMON_MINIMAL) +wpad
 endef
 
 define Package/freifunk-berlin-meta-default4MB/description
@@ -49,7 +53,7 @@ $(call Package/freifunk-berlin-meta/Default)
   DEPENDS+= $(COMMON_MINIMAL) +hostapd \
             +olsrd-mod-txtinfo +olsrd-mod-watchdog \
             +freifunk-watchdog \
-            +freifunk-berlin-statistics-defaults +luci-i18n-statistics-de \
+            +luci-i18n-statistics-de \
             +collectd-mod-interface +collectd-mod-iwinfo +collectd-mod-network +collectd-mod-olsrd \
             +collectd-mod-rrdtool +collectd-mod-ping +collectd-mod-uptime +collectd-mod-memory \
             +batctl +alfred
