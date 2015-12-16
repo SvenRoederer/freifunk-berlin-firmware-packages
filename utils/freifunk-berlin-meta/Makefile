@@ -75,19 +75,35 @@ endef
 define Build/Compile
 	cp $(TOPDIR)/package/base-files/files/etc/banner $(PKG_BUILD_DIR)/files
 	patch -d $(PKG_BUILD_DIR)/files -p5 < $(FF_BERLIN_DIR)/patches/002-banner-info.patch
+	echo  >$(PKG_BUILD_DIR)/files/change_banner "#!/bin/sh"
+	echo >>$(PKG_BUILD_DIR)/files/change_banner "cat >/etc/banner <<BANNER_TEXT"
+	cat  >>$(PKG_BUILD_DIR)/files/change_banner $(PKG_BUILD_DIR)/files/banner
+	echo >>$(PKG_BUILD_DIR)/files/change_banner "BANNER_TEXT"
 endef
 
 define Package/freifunk-berlin-meta-default4MB/install
-	true
-#	$(INSTALL_DIR) $(1)/etc/uci-defaults
-#	$(CP) ./uci-defaults/* $(1)/etc/uci-defaults
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(CP) $(PKG_BUILD_DIR)/files/change_banner $(1)/etc/uci-defaults
 endef
 
 define Package/freifunk-berlin-meta-default/install
-	true
-#	$(INSTALL_DIR) $(1)/etc/uci-defaults
-#	$(CP) ./uci-defaults/* $(1)/etc/uci-defaults
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(CP) $(PKG_BUILD_DIR)/files/change_banner $(1)/etc/uci-defaults
 endef
+
+#define Package/freifunk-berlin-meta-default4MB/postint
+##!/bin/sh 
+#if [ -z $${IPKG_INSTROOT} ] ; then
+#    ( . /etc/uci-defaults/change_banner ) && rm -f /etc/uci-defaults/change_banner
+#fi
+#endef
+
+#define Package/freifunk-berlin-meta-default/postint
+##!/bin/sh 
+#if [ -z $${IPKG_INSTROOT} ] ; then
+#    ( . /etc/uci-defaults/change_banner ) && rm -f /etc/uci-defaults/change_banner
+#fi
+#endef
 
 $(eval $(call BuildPackage,freifunk-berlin-meta-default))
 $(eval $(call BuildPackage,freifunk-berlin-meta-default4MB))
