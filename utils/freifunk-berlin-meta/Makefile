@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=freifunk-berlin-meta
 PKG_VERSION:=0.0.0
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
 
@@ -13,33 +13,34 @@ define Package/freifunk-berlin-meta/Default
   CATEGORY:=freifunk-berlin
   TITLE:=Freifunk Berlin meta-package
   URL:=http://github.com/freifunk-berlin/packages_berlin
-  DEPENDS:= +freifunk-berlin-dhcp-defaults \
-            +freifunk-berlin-freifunk-defaults \
-            +freifunk-berlin-network-defaults \
-            +freifunk-berlin-olsrd-defaults \
-            +freifunk-berlin-statistics-defaults \
-            +freifunk-berlin-uhttpd-defaults
+  PKG_BUILD_DEPENDS:=+base-files
 endef
 
 define Package/freifunk-berlin-meta/Default/description
   Freifunk Berlin meta-package for basic dependencies
 endef
 
-COMMON_MINIMAL=+libiwinfo-lua \
-            +luci-theme-bootstrap +uhttpd-mod-ubus \
-            +luci-app-ffwizard-berlin +community-profiles \
-            +freifunk-berlin-firewall-defaults \
-            +freifunk-berlin-migration \
-            +olsrd-mod-arprefresh +olsrd-mod-dyn-gw +luci-app-olsr-services \
-            +olsrd-mod-jsoninfo +olsrd-mod-nameservice \
-            +freifunk-berlin-openvpn-files +openvpn-polarssl \
-            +dnsmasq +qos-scripts \
-            +luci-app-owm +luci-app-owm-cmd
+COMMON_MINIMAL=+dnsmasq \
+            +freifunk-common +community-profiles \
+            +freifunk-berlin-dhcp-defaults +freifunk-berlin-freifunk-defaults \
+            +freifunk-berlin-network-defaults +freifunk-berlin-olsrd-defaults \
+            +luci-app-ffwizard-berlin \
+            +luci-app-olsr-services +olsrd-mod-arprefresh +olsrd-mod-dyn-gw +kmod-ipip \
+            +luci-app-owm +luci-app-owm-cmd \
+            +libiwinfo-lua +iwinfo \
+            +luci-theme-bootstrap \
+            +qos-scripts 
+
+DEFAULT_ROUTER=+freifunk-berlin-firewall-defaults +freifunk-berlin-migration \
+            +iptables-mod-filter \
+            +uboot-envtools \
+            +uhttpd +uhttpd-mod-ubus
+
 
 define Package/freifunk-berlin-meta-default4MB
 $(call Package/freifunk-berlin-meta/Default)
   TITLE+= (FF-Node 4MB-Flash)
-  DEPENDS+= $(COMMON_MINIMAL) +wpad
+  DEPENDS:= $(COMMON_MINIMAL) $(DEFAULT_ROUTER) +wpad-mini
 endef
 
 define Package/freifunk-berlin-meta-default4MB/description
@@ -50,8 +51,9 @@ endef
 define Package/freifunk-berlin-meta-default
 $(call Package/freifunk-berlin-meta/Default)
   TITLE+= (FF-Node)
-  DEPENDS+= $(COMMON_MINIMAL) +hostapd \
+  DEPENDS:= $(COMMON_MINIMAL) +hostapd \
             +olsrd-mod-txtinfo +olsrd-mod-watchdog \
+            +freifunk-berlin-statistics-defaults +freifunk-berlin-uhttpd-defaults \
             +freifunk-watchdog \
             +luci-i18n-statistics-de \
             +collectd-mod-interface +collectd-mod-iwinfo +collectd-mod-network +collectd-mod-olsrd \
@@ -73,6 +75,7 @@ define Build/Prepare
 endef
 
 define Build/Compile
+	# use original Freifunk-Berlin patch to build new banner-text
 	cp $(TOPDIR)/package/base-files/files/etc/banner $(PKG_BUILD_DIR)/files
 	patch -d $(PKG_BUILD_DIR)/files -p5 < $(FF_BERLIN_DIR)/patches/002-banner-info.patch
 	echo  >$(PKG_BUILD_DIR)/files/change_banner "#!/bin/sh"
