@@ -47,7 +47,7 @@ define Package/luci-app-owm-gui
 endef
 define Package/luci-app-owm-ant
   $(call Package/luci-app-owm/default)
-  DEPENDS:=luci-app-owm +luci-base
+  DEPENDS:=+luci-base
   TITLE:=luci-app-owm-ant - GUI Antenna settings
 endef
 
