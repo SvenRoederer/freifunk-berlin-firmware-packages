@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=freifunk-berlin-firewall-defaults
-PKG_VERSION:=0.0.1
+PKG_VERSION:=0.0.2
 PKG_RELEASE:=1
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
@@ -13,7 +13,7 @@ define Package/freifunk-berlin-firewall-defaults
   CATEGORY:=freifunk-berlin
   TITLE:=Freifunk Berlin firewall default configuration
   URL:=http://github.com/freifunk-berlin/packages_berlin
-  DEPENDS+= +firewall +freifunk-berlin-lib-guard
+  DEPENDS+= +firewall +ip6tables +freifunk-berlin-lib-guard
 endef
 
 define Package/freifunk-berlin-firewall-defaults/description
