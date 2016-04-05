@@ -103,7 +103,6 @@ function commit()
   uci:commit("freifunk")
   uci:commit("wireless")
   uci:commit("network")
-  uci:commit("freifunk-watchdog")
   uci:commit("qos")
 
   sys.init.enable("olsrd")
@@ -142,7 +141,6 @@ function reset()
   uci:revert("freifunk")
   uci:revert("wireless")
   uci:revert("network")
-  uci:revert("freifunk-watchdog")
   uci:revert("qos")
 
   if ipkg.installed("luci-app-statistics") == True then
