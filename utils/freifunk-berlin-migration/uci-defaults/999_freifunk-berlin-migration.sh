@@ -141,6 +141,11 @@ sgw_rules_to_fw3() {
   sed -i '/iptables -I FORWARD -o tnl_+ -j ACCEPT$/d' /etc/firewall.user
 }
 
+remove_dhcp_interface_lan() {
+  uci -q delete dhcp.lan
+  uci commit dhcp
+}
+
 migrate () {
   log "Migrating from ${OLD_VERSION} to ${VERSION}."
 
@@ -167,6 +172,7 @@ migrate () {
     fix_dhcp_start_limit
     openvpn_ffvpn_hotplug
     sgw_rules_to_fw3
+    remove_dhcp_interface_lan
   fi
 
   # overwrite version with the new version
