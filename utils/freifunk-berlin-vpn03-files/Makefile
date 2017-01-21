@@ -10,17 +10,32 @@ PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/freifunk-berlin-vpn03-files
+define Package/freifunk-berlin-vpn03-files/default
   SECTION:=freifunk-berlin
   CATEGORY:=freifunk-berlin
-  TITLE:=Freifunk Berlin VPN03 files
   URL:=http://github.com/freifunk-berlin/packages_berlin
-  DEPENDS+= @(PACKAGE_openvpn-polarssl||PACKAGE_openvpn-mbedtls) +freifunk-berlin-lib-guard
+  DEPENDS+= +freifunk-berlin-lib-guard
   PKGARCH:=all
+endef
+
+define Package/freifunk-berlin-vpn03_openvpn-files
+  $(call Package/freifunk-berlin-vpn03-files/default)
+  TITLE:=Freifunk Berlin VPN03 files (OpenVPN)
+  DEPENDS:= @(PACKAGE_openvpn-polarssl||PACKAGE_openvpn-mbedtls)
 endef
 
 define Package/freifunk-berlin-vpn03_openvpn-files/description
   Freifunk Berlin openVPN files
+endef
+
+define Package/freifunk-berlin-vpn03_ipsec-files
+  $(call Package/freifunk-berlin-vpn03-files/default)
+  TITLE:=Freifunk Berlin VPN03 files (IpSec)
+  DEPENDS:=+strongswan-minimal +strongswan-mod-pem +strongswan-mod-openssl +vtiv4 +vti
+endef
+
+define Package/freifunk-berlin-vpn03_ipsec-files/description
+  Freifunk VPN03 files for IpSec-tunnels
 endef
 
 define Build/Prepare
@@ -44,4 +59,10 @@ define Package/freifunk-berlin-vpn03_openvpn-files/install
 	$(CP) ./openvpn/60-ffopenvpn $(1)/etc/hotplug.d/iface
 endef
 
+define Package/freifunk-berlin-vpn03_ipsec-files/install
+	$(INSTALL_DIR) $(1)/etc/ipsec.d/cacerts
+	$(CP) ./files/freifunk-ca.crt $(1)/etc/ipsec.d/cacerts/
+endef
+
 $(eval $(call BuildPackage,freifunk-berlin-vpn03_openvpn-files))
+$(eval $(call BuildPackage,freifunk-berlin-vpn03_ipsec-files))
