@@ -21,7 +21,7 @@ endef
 define Package/freifunk-berlin-vpn03_openvpn-files
   $(call Package/freifunk-berlin-vpn03-files/default)
   TITLE:=Freifunk Berlin VPN03 files (OpenVPN)
-  DEPENDS:= @(PACKAGE_openvpn-polarssl||PACKAGE_openvpn-mbedtls)
+  DEPENDS:=+@(PACKAGE_openvpn-polarssl||PACKAGE_openvpn-mbedtls)
 endef
 
 define Package/freifunk-berlin-vpn03_openvpn-files/description
