@@ -60,6 +60,10 @@ define Package/freifunk-berlin-vpn03_openvpn-files/install
 endef
 
 define Package/freifunk-berlin-vpn03_ipsec-files/install
+	$(INSTALL_DIR) $(1)/etc/
+	$(CP) ./ipsec/ipsec.conf $(1)/etc/ipsec.conf
+	$(INSTALL_DIR) $(1)/lib/freifunk
+	$(CP) ./ipsec/vti.sh $(1)/lib/freifunk/ffvpn-ipsec-vti.sh
 	$(INSTALL_DIR) $(1)/etc/ipsec.d/cacerts
 	$(CP) ./files/freifunk-ca.crt $(1)/etc/ipsec.d/cacerts/
 endef
