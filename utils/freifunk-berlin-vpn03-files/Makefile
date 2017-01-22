@@ -50,7 +50,7 @@ endef
 
 define Package/freifunk-berlin-vpn03_openvpn-files/install
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
-	$(CP) ./uci-defaults/* $(1)/etc/uci-defaults
+	$(CP) ./uci-defaults/freifunk-berlin-vpn03-openvpn $(1)/etc/uci-defaults
 	$(INSTALL_DIR) $(1)/etc/openvpn
 	$(CP) ./files/freifunk-ca.crt $(1)/etc/openvpn
 	$(INSTALL_DIR) $(1)/lib/freifunk
