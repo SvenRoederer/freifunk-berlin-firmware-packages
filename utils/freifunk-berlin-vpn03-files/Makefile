@@ -60,6 +60,8 @@ define Package/freifunk-berlin-vpn03_openvpn-files/install
 endef
 
 define Package/freifunk-berlin-vpn03_ipsec-files/install
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(CP) ./uci-defaults/freifunk-berlin-vpn03-ipsec $(1)/etc/uci-defaults
 	$(INSTALL_DIR) $(1)/etc/
 	$(CP) ./ipsec/ipsec.conf $(1)/etc/ipsec.conf
 	$(INSTALL_DIR) $(1)/lib/freifunk
@@ -68,6 +70,8 @@ define Package/freifunk-berlin-vpn03_ipsec-files/install
 	$(CP) ./files/freifunk-ca.crt $(1)/etc/ipsec.d/cacerts/
 	$(INSTALL_DIR) $(1)/etc/hotplug.d/iface
 	$(CP) ./ipsec/60-vpn03_ipsec $(1)/etc/hotplug.d/iface
+	$(INSTALL_DIR) $(1)/etc/strongswan.d
+	$(CP) ./ipsec/vpn03-strongswan.conf $(1)/etc/strongswan.d/
 endef
 
 $(eval $(call BuildPackage,freifunk-berlin-vpn03_openvpn-files))
