@@ -66,6 +66,8 @@ define Package/freifunk-berlin-vpn03_ipsec-files/install
 	$(CP) ./ipsec/vti.sh $(1)/lib/freifunk/ffvpn-ipsec-vti.sh
 	$(INSTALL_DIR) $(1)/etc/ipsec.d/cacerts
 	$(CP) ./files/freifunk-ca.crt $(1)/etc/ipsec.d/cacerts/
+	$(INSTALL_DIR) $(1)/etc/hotplug.d/iface
+	$(CP) ./ipsec/60-vpn03_ipsec $(1)/etc/hotplug.d/iface
 endef
 
 $(eval $(call BuildPackage,freifunk-berlin-vpn03_openvpn-files))
