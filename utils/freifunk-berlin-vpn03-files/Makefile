@@ -56,7 +56,7 @@ define Package/freifunk-berlin-vpn03_openvpn-files/install
 	$(INSTALL_DIR) $(1)/lib/freifunk
 	$(CP) ./openvpn/ffvpn-up.sh $(1)/lib/freifunk
 	$(INSTALL_DIR) $(1)/etc/hotplug.d/iface
-	$(CP) ./openvpn/60-ffopenvpn $(1)/etc/hotplug.d/iface
+	$(CP) ./openvpn/60-vpn03_openvpn $(1)/etc/hotplug.d/iface
 endef
 
 define Package/freifunk-berlin-vpn03_ipsec-files/install
