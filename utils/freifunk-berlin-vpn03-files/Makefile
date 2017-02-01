@@ -4,7 +4,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=freifunk-berlin-vpn03-files
 PKG_VERSION:=0.0.3
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
@@ -18,23 +18,23 @@ define Package/freifunk-berlin-vpn03-files/default
   PKGARCH:=all
 endef
 
-define Package/freifunk-berlin-vpn03_openvpn-files
+define Package/freifunk-berlin-vpn03-openvpn-files
   $(call Package/freifunk-berlin-vpn03-files/default)
   TITLE:=Freifunk Berlin VPN03 files (OpenVPN)
   DEPENDS:=+openvpn
 endef
 
-define Package/freifunk-berlin-vpn03_openvpn-files/description
+define Package/freifunk-berlin-vpn03-openvpn-files/description
   Freifunk Berlin openVPN files
 endef
 
-define Package/freifunk-berlin-vpn03_ipsec-files
+define Package/freifunk-berlin-vpn03-ipsec-files
   $(call Package/freifunk-berlin-vpn03-files/default)
   TITLE:=Freifunk Berlin VPN03 files (IpSec)
   DEPENDS:=+strongswan-minimal +strongswan-mod-pem +strongswan-mod-openssl +vtiv4 +vti
 endef
 
-define Package/freifunk-berlin-vpn03_ipsec-files/description
+define Package/freifunk-berlin-vpn03-ipsec-files/description
   Freifunk VPN03 files for IpSec-tunnels
 endef
 
@@ -48,7 +48,7 @@ endef
 define Build/Compile
 endef
 
-define Package/freifunk-berlin-vpn03_openvpn-files/install
+define Package/freifunk-berlin-vpn03-openvpn-files/install
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(CP) ./uci-defaults/freifunk-berlin-vpn03-openvpn $(1)/etc/uci-defaults
 	$(INSTALL_DIR) $(1)/etc/openvpn
@@ -59,7 +59,7 @@ define Package/freifunk-berlin-vpn03_openvpn-files/install
 	$(CP) ./openvpn/60-vpn03_openvpn $(1)/etc/hotplug.d/iface
 endef
 
-define Package/freifunk-berlin-vpn03_ipsec-files/install
+define Package/freifunk-berlin-vpn03-ipsec-files/install
 	$(INSTALL_DIR) $(1)/etc/uci-defaults
 	$(CP) ./uci-defaults/freifunk-berlin-vpn03-ipsec $(1)/etc/uci-defaults
 	$(INSTALL_DIR) $(1)/etc/
@@ -74,5 +74,5 @@ define Package/freifunk-berlin-vpn03_ipsec-files/install
 	$(CP) ./ipsec/vpn03-strongswan.conf $(1)/etc/strongswan.d/
 endef
 
-$(eval $(call BuildPackage,freifunk-berlin-vpn03_openvpn-files))
-$(eval $(call BuildPackage,freifunk-berlin-vpn03_ipsec-files))
+$(eval $(call BuildPackage,freifunk-berlin-vpn03-openvpn-files))
+$(eval $(call BuildPackage,freifunk-berlin-vpn03-ipsec-files))
