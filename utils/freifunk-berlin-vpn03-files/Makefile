@@ -4,7 +4,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=freifunk-berlin-vpn03-files
 PKG_VERSION:=0.0.3
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)
 
@@ -21,7 +21,7 @@ endef
 define Package/freifunk-berlin-vpn03-openvpn-files
   $(call Package/freifunk-berlin-vpn03-files/default)
   TITLE:=Freifunk Berlin VPN03 files (OpenVPN)
-  DEPENDS:=+openvpn
+  DEPENDS:=+openvpn-crypto
 endef
 
 define Package/freifunk-berlin-vpn03-openvpn-files/description
