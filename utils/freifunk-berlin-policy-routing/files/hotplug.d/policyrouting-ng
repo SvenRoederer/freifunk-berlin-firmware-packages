@@ -102,7 +102,8 @@ get_HNAnets
 
 if [ "$ACTION" = "ifup" ] && [ "$enable" = "1" ]; then
 	log "policyrouting running"
-	if [ "is_hna_net ${INTERFACE}" ]; then
+	is_hna_net ${INTERFACE}
+	if [ $? ]; then
 		log "interface ${INTERFACE} is a HNA-net, ensure correct routing for it ..."
 		add_hna_routing $IF_NET $DEVICE
 #		net=$(ip -4 addr show dev $ifname scope global|sed -n '2s,^[[:space:]]\+inet \([^[:space:]]\+\).*,\1,p')
