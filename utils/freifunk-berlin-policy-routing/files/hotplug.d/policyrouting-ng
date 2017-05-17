@@ -5,17 +5,9 @@
 . /lib/functions.sh
 . /lib/functions/network.sh
 
-proto="4"
-#[ -f /proc/net/ipv6_route ] && proto="4 6"
-
-config_load freifunk-policyrouting
-config_get enable pr enable
-config_get fallback pr fallback
-config_get strict pr strict
-config_get zones pr zones
-
-export Hna4_list=""
-export IF_NET=""
+log() {
+	logger -t ff-policyrouting-ng "$1"
+}
 
 # returns network-address and prefix for device 
 # $1 variable for result
@@ -31,7 +23,7 @@ get_net_of_interface() {
 get_net_of_interface IF_NET ${INTERFACE}
 
 is_hna_net() {
-	logger -t "pol-ng" checking if $1 is HNA-network
+	log "checking if $1 is HNA-network"
 
 	config_cb() {
 		local type="$1"
@@ -47,10 +39,10 @@ is_hna_net() {
 
         ifipaddr=$(uci -q get network.$DEVICE.ipaddr)
 	ifipmask=$(uci -q get network.$DEVICE.netmask)
-        logger -t pol-ng "ip of $DEVICE: $ifipaddr/$ifipmask"
+	log "ip of $DEVICE: $ifipaddr/$ifipmask"
 #	/bin/ipcalc.sh ${ifipaddr} ${ifipmask}
 	eval $(/bin/ipcalc.sh ${ifipaddr} ${ifipmask})
-	logger -t pol-ng "ip of $DEVICE: $NETWORK / $NETMASK"
+	log "ip of $DEVICE: $NETWORK / $NETMASK"
 
 
 
@@ -63,7 +55,7 @@ is_hna_net() {
 	echo HNA4-net: $hna_net / $hna_mask
 	eval  $(/bin/ipcalc.sh ${hna_net} ${hna_mask})
 	hna_prefix=${prefix}
-	logger -t pol-ng "ip of HNA4: $hna_net / $hna_prefix"
+	log "ip of HNA4: $hna_net / $hna_prefix"
 
 	if [ "$NETWORK/$NETMASK" = "$hna_net/$hna_prefix" ]; then
 		echo found HNA
@@ -82,7 +74,7 @@ add_to_hna() {
 	hna_route="$(ip route list exact ${net} dev $device table olsr-hnas)"
 echo $hna_route
 	if [ -z "${hna_route}" ]; then
-		logger -t ff-policyrouting-ng  "route needs to be added"
+		log "route needs to be added"
 #		$cmd
 #                                if [ "$?" = 0 ]; then
 #                                        logger -s -t policyrouting "Added route: $cmd"
@@ -90,15 +82,27 @@ echo $hna_route
 #                                        logger -s -t policyrouting "Error! Could not add route: $cmd"
 #	        fi
 	else
-                       logger -t ff-policyrouting-ng  "correct routing-entry was already setup"
+		log "correct routing-entry was already setup"
 	fi
 
 }
 
+proto="4"
+#[ -f /proc/net/ipv6_route ] && proto="4 6"
+
+config_load freifunk-policyrouting
+config_get enable pr enable
+config_get fallback pr fallback
+config_get strict pr strict
+config_get zones pr zones
+
+export Hna4_list=""
+export IF_NET=""
+
 if [ "$ACTION" = "ifup" ] && [ "$enable" = "1" ]; then
-	logger -t ff-policyrouting-ng "policyrouting running"
+	log "policyrouting running"
 	if [ "is_hna_net ${INTERFACE}" ]; then
-		logger -t ff-policyrouting-ng "interface ${INTERFACE} is a HNA-net, ensure correct routing ..."
+		log "interface ${INTERFACE} is a HNA-net, ensure correct routing ..."
 		add_to_hna $IF_NET $DEVICE
 #		net=$(ip -4 addr show dev $ifname scope global|sed -n '2s,^[[:space:]]\+inet \([^[:space:]]\+\).*,\1,p')
 #		eval $(/bin/ipcalc.sh $net)
