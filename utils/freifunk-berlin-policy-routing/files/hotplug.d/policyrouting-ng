@@ -38,8 +38,8 @@ get_HNAnets() {
 is_hna_net() {
 	log "checking if $1 is HNA-network"
 
-	ifipaddr=$(uci -q get network.$DEVICE.ipaddr)
-	ifipmask=$(uci -q get network.$DEVICE.netmask)
+	ifipaddr=$(uci -q get network.$INTERFACE.ipaddr)
+	ifipmask=$(uci -q get network.$INTERFACE.netmask)
 	log "ip of $DEVICE: $ifipaddr/$ifipmask"
 #	/bin/ipcalc.sh ${ifipaddr} ${ifipmask}
 	eval $(/bin/ipcalc.sh ${ifipaddr} ${ifipmask})
