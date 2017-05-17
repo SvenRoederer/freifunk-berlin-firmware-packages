@@ -20,9 +20,8 @@ get_net_of_interface() {
 	eval "${1}=$NETWORK/$PREFIX"
 }
 
-is_hna_net() {
-	log "checking if $1 is HNA-network"
-
+# put all HNA4 UCI-sections into global variable Hna4_list
+get_HNAnets() {
 	config_cb() {
 		local type="$1"
 		local name="$2"
@@ -30,10 +29,12 @@ is_hna_net() {
 		if [ "$type" = "Hna4" ]; then
 			echo "is Hna4 ($name)"
 			Hna4_list="${Hna4_list} ${name}"
-#			config_get ipaddr "$name" netaddr
-#			echo $ipaddr
 		fi
 	}
+}
+
+is_hna_net() {
+	log "checking if $1 is HNA-network"
 
 	ifipaddr=$(uci -q get network.$DEVICE.ipaddr)
 	ifipmask=$(uci -q get network.$DEVICE.netmask)
@@ -95,6 +96,7 @@ export Hna4_list=""
 export IF_NET=""
 
 get_net_of_interface IF_NET ${INTERFACE}
+get_HNAnets
 
 if [ "$ACTION" = "ifup" ] && [ "$enable" = "1" ]; then
 	log "policyrouting running"
