@@ -71,12 +71,12 @@ add_hna_routing() {
 	hna_route="$(ip route list exact ${net} dev $device table olsr-hnas)"
 	if [ -z "${hna_route}" ]; then
 		log "route needs to be added"
-#		$cmd
-#                                if [ "$?" = 0 ]; then
-#                                        logger -s -t policyrouting "Added route: $cmd"
-#                                else
-#                                        logger -s -t policyrouting "Error! Could not add route: $cmd"
-#	        fi
+		$cmd
+		if [ "$?" = 0 ]; then
+			log -s "Added route: $cmd"
+		else
+			log -s "Error! Could not add route: $cmd"
+		fi
 	else
 		log "correct routing-entry was already setup"
 	fi
