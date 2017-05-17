@@ -28,38 +28,7 @@ get_net_of_interface() {
 	eval "${1}=$NETWORK/$PREFIX"	
 }
 
-#network_get_device ifname ${DEVICE}
 get_net_of_interface IF_NET ${INTERFACE}
-
-device_of_net() {
-        config_cb() {          
-                local type="$1"                   
-                local name="$2"
-		local dev ipaddr
-
-                if [ "interface" = "${type}" ]; then
-			echo "found interface: $name"
-                        config_get ipaddr "$name" ipaddr
-			echo addr: $ipaddr
-                fi         
-        }
-
-	config_load network
-	reset_cb
-}
-
-add_hnas() {
-	local config="$1"
-	local rt_table="$2"
-
-	hnanet=$(uci get olsrd.${config}.netaddr)
-	hnamask=$(uci get olsrd.${config}.netmask)
-	logger -t "pol-ng" "adding ${hnanet}/${hnamask}"
-	device_of_net
-echo calling ip route
-	ip route add ${hnanet}/${hnamask} table ${rt_table}
-echo end ip route
-}
 
 is_hna_net() {
 	logger -t "pol-ng" checking if $1 is HNA-network
@@ -74,11 +43,6 @@ is_hna_net() {
 #			config_get ipaddr "$name" netaddr
 #			echo $ipaddr
 		fi
-	}
-	option_cb_dis() {
-		local name="$1"
-		local value="$2"
-		echo olsrd-opt: $name
 	}
 
         ifipaddr=$(uci -q get network.$DEVICE.ipaddr)
@@ -131,14 +95,6 @@ echo $hna_route
 
 }
 
-#is_hna_net ${DEVICE}
-#echo $?
-
-#get_net_of_device IF_NET ${DEVICE}
-#echo $IF_NET
-
-#exit 0
-
 if [ "$ACTION" = "ifup" ] && [ "$enable" = "1" ]; then
 	logger -t ff-policyrouting-ng "policyrouting running"
 	if [ "is_hna_net ${INTERFACE}" ]; then
@@ -146,14 +102,6 @@ if [ "$ACTION" = "ifup" ] && [ "$enable" = "1" ]; then
 		add_to_hna $IF_NET $DEVICE
 #		net=$(ip -4 addr show dev $ifname scope global|sed -n '2s,^[[:space:]]\+inet \([^[:space:]]\+\).*,\1,p')
 #		eval $(/bin/ipcalc.sh $net)
-#		cmd="ip route add $NETWORK/$PREFIX dev $ifname table olsr-hnas"
-#		logger -t ff-policyrouting-ng  "add route command: $cmd"
-#		if [ ! "$(ip route show table olsr-hnas |grep "$NETWORK/$PREFIX dev")" ]; then
-#			logger -t ff-policyrouting-ng  "route needs to be added"
-#			add_hna $NETWORK $PREFIX $ifname
-#		else
-#			logger -t ff-policyrouting-ng  "nothing to do"
-#		fi	
 	fi
 fi
 
@@ -177,5 +125,3 @@ exit 0
 			fi
 		fi
 	fi
-#fi
-
