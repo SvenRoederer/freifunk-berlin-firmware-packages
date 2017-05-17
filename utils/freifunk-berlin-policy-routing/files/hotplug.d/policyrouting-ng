@@ -20,8 +20,6 @@ get_net_of_interface() {
 	eval "${1}=$NETWORK/$PREFIX"
 }
 
-get_net_of_interface IF_NET ${INTERFACE}
-
 is_hna_net() {
 	log "checking if $1 is HNA-network"
 
@@ -95,6 +93,8 @@ config_get zones pr zones
 
 export Hna4_list=""
 export IF_NET=""
+
+get_net_of_interface IF_NET ${INTERFACE}
 
 if [ "$ACTION" = "ifup" ] && [ "$enable" = "1" ]; then
 	log "policyrouting running"
