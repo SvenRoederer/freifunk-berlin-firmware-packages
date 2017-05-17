@@ -1,0 +1,181 @@
+#!/bin/sh
+
+[ "$INTERFACE" = wan ] && exit
+
+. /lib/functions.sh
+. /lib/functions/network.sh
+
+proto="4"
+#[ -f /proc/net/ipv6_route ] && proto="4 6"
+
+config_load freifunk-policyrouting
+config_get enable pr enable
+config_get fallback pr fallback
+config_get strict pr strict
+config_get zones pr zones
+
+export Hna4_list=""
+export IF_NET=""
+
+# returns network-address and prefix for device 
+# $1 variable for result
+# $2 device (LAN, wan, ...)
+get_net_of_interface() {
+	local net
+
+	network_get_subnet net ${2}
+	eval $(/bin/ipcalc.sh $net)
+	eval "${1}=$NETWORK/$PREFIX"	
+}
+
+#network_get_device ifname ${DEVICE}
+get_net_of_interface IF_NET ${INTERFACE}
+
+device_of_net() {
+        config_cb() {          
+                local type="$1"                   
+                local name="$2"
+		local dev ipaddr
+
+                if [ "interface" = "${type}" ]; then
+			echo "found interface: $name"
+                        config_get ipaddr "$name" ipaddr
+			echo addr: $ipaddr
+                fi         
+        }
+
+	config_load network
+	reset_cb
+}
+
+add_hnas() {
+	local config="$1"
+	local rt_table="$2"
+
+	hnanet=$(uci get olsrd.${config}.netaddr)
+	hnamask=$(uci get olsrd.${config}.netmask)
+	logger -t "pol-ng" "adding ${hnanet}/${hnamask}"
+	device_of_net
+echo calling ip route
+	ip route add ${hnanet}/${hnamask} table ${rt_table}
+echo end ip route
+}
+
+is_hna_net() {
+	logger -t "pol-ng" checking if $1 is HNA-network
+
+	config_cb() {
+		local type="$1"
+		local name="$2"
+
+		if [ "$type" = "Hna4" ]; then
+			echo "is Hna4 ($name)"
+			 Hna4_list="${Hna4_list} ${name}"
+#			config_get ipaddr "$name" netaddr
+#			echo $ipaddr
+		fi
+	}
+	option_cb_dis() {
+		local name="$1"
+		local value="$2"
+		echo olsrd-opt: $name
+	}
+
+        ifipaddr=$(uci -q get network.$DEVICE.ipaddr)
+	ifipmask=$(uci -q get network.$DEVICE.netmask)
+        logger -t pol-ng "ip of $DEVICE: $ifipaddr/$ifipmask"
+#	/bin/ipcalc.sh ${ifipaddr} ${ifipmask}
+	eval $(/bin/ipcalc.sh ${ifipaddr} ${ifipmask})
+	logger -t pol-ng "ip of $DEVICE: $NETWORK / $NETMASK"
+
+
+
+	config_load olsrd
+	#config_foreach add_hnas Hna4 olsr-hnas
+	#logger -t "pol-ng" "passed config_foreach"
+	echo HNAs: $Hna4_list
+	config_get hna_net $Hna4_list netaddr
+	config_get hna_mask $Hna4_list netmask
+	echo HNA4-net: $hna_net / $hna_mask
+	eval  $(/bin/ipcalc.sh ${hna_net} ${hna_mask})
+	hna_prefix=${prefix}
+	logger -t pol-ng "ip of HNA4: $hna_net / $hna_prefix"
+
+	if [ "$NETWORK/$NETMASK" = "$hna_net/$hna_prefix" ]; then
+		echo found HNA
+		return 1
+	fi
+}
+
+add_to_hna() {
+	local net=${1}
+	local device=${2}
+
+	cmd="ip route add $net dev $device table olsr-hnas"	
+#echo $cmd
+#echo ip route list exact ${net} dev $device table olsr-hnas
+#echo "ip route show table olsr-hnas | grep -q ${net}"
+	hna_route="$(ip route list exact ${net} dev $device table olsr-hnas)"
+echo $hna_route
+	if [ -z "${hna_route}" ]; then
+		logger -t ff-policyrouting-ng  "route needs to be added"
+#		$cmd
+#                                if [ "$?" = 0 ]; then
+#                                        logger -s -t policyrouting "Added route: $cmd"
+#                                else
+#                                        logger -s -t policyrouting "Error! Could not add route: $cmd"
+#	        fi
+	else
+                       logger -t ff-policyrouting-ng  "correct routing-entry was already setup"
+	fi
+
+}
+
+#is_hna_net ${DEVICE}
+#echo $?
+
+#get_net_of_device IF_NET ${DEVICE}
+#echo $IF_NET
+
+#exit 0
+
+if [ "$ACTION" = "ifup" ] && [ "$enable" = "1" ]; then
+	logger -t ff-policyrouting-ng "policyrouting running"
+	if [ "is_hna_net ${INTERFACE}" ]; then
+		logger -t ff-policyrouting-ng "interface ${INTERFACE} is a HNA-net, ensure correct routing ..."
+		add_to_hna $IF_NET $DEVICE
+#		net=$(ip -4 addr show dev $ifname scope global|sed -n '2s,^[[:space:]]\+inet \([^[:space:]]\+\).*,\1,p')
+#		eval $(/bin/ipcalc.sh $net)
+#		cmd="ip route add $NETWORK/$PREFIX dev $ifname table olsr-hnas"
+#		logger -t ff-policyrouting-ng  "add route command: $cmd"
+#		if [ ! "$(ip route show table olsr-hnas |grep "$NETWORK/$PREFIX dev")" ]; then
+#			logger -t ff-policyrouting-ng  "route needs to be added"
+#			add_hna $NETWORK $PREFIX $ifname
+#		else
+#			logger -t ff-policyrouting-ng  "nothing to do"
+#		fi	
+	fi
+fi
+
+exit 0
+	case $(uci get network.${INTERFACE}.proto) in none)
+                # ubus status/netifd does not output ip4addr if proto=none
+                net=$(ip -4 addr show dev ${DEVICE} scope global|sed -n '2s,^[[:space:]]\+inet \([^[:space:]]\+\).*,\1,p'
+                #net6=$(ip -6 addr show dev ${DEVICE} scope global|sed -n '2s,^[[:space:]]\+inet6 \([^[:space:]]\+\).*,\1
+        ;;*)
+                network_get_subnet net $INTERFACE
+                #network_get_subnet6 net6 $INTERFACE
+        ;;esac
+	logger -t ff-policyrouting-ng "working on net: ${net}"
+
+	if [ "$net" != "" -a -n "${DEVICE}" ]; then
+                eval $(/bin/ipcalc.sh $net)
+		if [ "$PREFIX" != "0" -a "$NETWORK" != "127.0.0.0" ]; then
+			if [ ! "$(ip route show table all |grep "$NETWORK/$PREFIX dev")" ]; then
+				cmd="ip route add $NETWORK/$PREFIX dev ${DEVICE} table localnets"
+				
+			fi
+		fi
+	fi
+#fi
+
