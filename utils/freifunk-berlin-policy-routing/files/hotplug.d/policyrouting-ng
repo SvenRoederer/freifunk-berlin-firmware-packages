@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# ToDO: make it work mit more than one HNA4
+
 [ "$INTERFACE" = wan ] && exit
 
 . /lib/functions.sh
