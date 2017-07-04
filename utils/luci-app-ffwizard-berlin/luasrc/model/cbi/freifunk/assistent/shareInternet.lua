@@ -2,7 +2,7 @@ local uci = require "luci.model.uci".cursor()
 local fs = require "nixio.fs"
 local tools = require "luci.tools.freifunk.assistent.tools"
 
-f = SimpleForm("ffvpn","","")
+f = SimpleForm("ffuplink","","")
 f.submit = "Next"
 f.cancel = "Back"
 f.reset = false
@@ -65,7 +65,7 @@ function main.write(self, section, value)
   uci:set("ffwizard", "settings", "usersBandwidthUp", usersBandwidthUp:formvalue(section))
   uci:set("ffwizard", "settings", "usersBandwidthDown", usersBandwidthDown:formvalue(section))
 
-  uci:section("openvpn", "openvpn", "ffvpn", {
+  uci:section("openvpn", "openvpn", "ffuplink", {
     --persist_tun='0',
     enabled='1'
   })

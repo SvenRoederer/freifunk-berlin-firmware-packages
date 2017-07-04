@@ -9,8 +9,8 @@ config_get sharenet settings sharenet
 
 [ "$sharenet" = 1 ] || exit
 
-[ "$INTERFACE" = ffvpn ] && [ "$ACTION" = ifup ] && logger -t ff-userlog "OpenVPN connection has been established"
-[ "$INTERFACE" = ffvpn ] && [ "$ACTION" = ifdown ] && logger -t ff-userlog "OpenVPN connection went down"
+[ "$INTERFACE" = ffuplink ] && [ "$ACTION" = ifup ] && logger -t ff-userlog "OpenVPN connection has been established"
+[ "$INTERFACE" = ffuplink ] && [ "$ACTION" = ifdown ] && logger -t ff-userlog "OpenVPN connection went down"
 
 [ "$INTERFACE" = wan ] || exit
 
