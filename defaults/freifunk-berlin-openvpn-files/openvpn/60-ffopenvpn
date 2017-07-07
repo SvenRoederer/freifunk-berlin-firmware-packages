@@ -16,7 +16,7 @@ config_get sharenet settings sharenet
 
 config_load openvpn
 local uci_vpn_enabled
-config_get uci_vpn_enabled ffvpn enabled
+config_get uci_vpn_enabled ffuplink enabled
 
 if [ "$ACTION" = ifup ]; then
   logger -t ff-userlog "WAN interface is up"
@@ -25,7 +25,7 @@ if [ "$ACTION" = ifup ]; then
     # Make sure OpenVPN connects only through WAN: set "local" option with WAN IP
     local wanip
     network_get_ipaddr wanip "wan"
-    uci set openvpn.ffvpn.local=$wanip
+    uci set openvpn.ffuplink.local=$wanip
     uci commit openvpn
     /etc/init.d/openvpn start
     exit
