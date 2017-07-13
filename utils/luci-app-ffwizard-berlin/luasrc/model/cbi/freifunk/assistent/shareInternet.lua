@@ -14,21 +14,21 @@ vpninfo = f:field(DummyValue, "vpninfo", "")
 vpninfo.template = "freifunk/assistent/snippets/vpninfo"
 
 if luci.http.formvalue("reupload", true) == "1" then
-  fs.unlink("/etc/openvpn/freifunk_client.crt")
-  fs.unlink("/etc/openvpn/freifunk_client.key")
+  fs.unlink("/etc/openvpn/ffuplink.crt")
+  fs.unlink("/etc/openvpn/ffuplink.key")
   luci.http.redirect(luci.dispatcher.build_url("admin/freifunk/assistent/sharedInternet"))
 end
-if fs.access("/etc/openvpn/freifunk_client.crt") then
+if fs.access("/etc/openvpn/ffuplink.crt") then
   vpncertreupload = f:field(DummyValue, "reupload", "")
   vpncertreupload.template = "freifunk/assistent/snippets/vpncertreupload"
 else
-  local cert = f:field(FileUpload, "cert", translate("Local Certificate"),"freifunk_client.crt")
-  cert.default="/etc/openvpn/freifunk_client.crt"
+  local cert = f:field(FileUpload, "cert", translate("Local Certificate"),"ffuplink.crt")
+  cert.default="/etc/openvpn/ffuplink.crt"
   cert.rmempty = false
   cert.optional = false
 
-  local key = f:field(FileUpload, "key", translate("Local Key"),"freifunk_client.key")
-  key.default="/etc/openvpn/freifunk_client.key"
+  local key = f:field(FileUpload, "key", translate("Local Key"),"ffuplink.key")
+  key.default="/etc/openvpn/ffuplink.key"
   key.rmempty = false
   key.optional = false
 end
@@ -72,11 +72,11 @@ function main.write(self, section, value)
 
   fs.move(
     "/etc/luci-uploads/cbid.ffuplink.1.cert",
-    "/etc/openvpn/freifunk_client.crt"
+    "/etc/openvpn/ffuplink.crt"
   )
   fs.move(
     "/etc/luci-uploads/cbid.ffuplink.1.key",
-    "/etc/openvpn/freifunk_client.key"
+    "/etc/openvpn/ffuplink.key"
   )
 
   uci:save("openvpn")
