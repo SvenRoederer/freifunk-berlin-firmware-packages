@@ -9,8 +9,18 @@ config_get sharenet settings sharenet
 
 [ "$sharenet" = 1 ] || exit
 
-[ "$INTERFACE" = ffuplink ] && [ "$ACTION" = ifup ] && logger -t ff-userlog "ffuplink connection has been established"
-[ "$INTERFACE" = ffuplink ] && [ "$ACTION" = ifdown ] && logger -t ff-userlog "ffuplink connection went down"
+if [ "$INTERFACE" = ffuplink ]; then
+  if [ "$ACTION" = ifup ]; then
+    local gateway
+    logger -t ff-userlog "ffuplink connection will be established"
+    network_get_gateway gateway wan
+    ip route add default via ${gateway} dev ffuplink table olsr-tunnel
+    logger -t ff-userlog "ffuplink connection has been established"
+  fi
+  if [ "$ACTION" = ifdown ]; then
+    logger -t ff-userlog "ffuplink connection went down"
+  fi
+fi
 
 [ "$INTERFACE" = wan ] || exit
 
