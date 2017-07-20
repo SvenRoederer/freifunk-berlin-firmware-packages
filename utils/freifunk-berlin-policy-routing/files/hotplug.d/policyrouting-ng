@@ -9,7 +9,7 @@ log() {
 	logger -t ff-policyrouting-ng "$1"
 }
 
-# returns network-address and prefix for device 
+# returns network-address and prefix for device
 # $1 variable for result
 # $2 device (LAN, wan, ...)
 get_net_of_interface() {
