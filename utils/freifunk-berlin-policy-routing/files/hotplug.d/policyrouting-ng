@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# ToDO: make it work mit more than one HNA4
-
 [ "$INTERFACE" = wan ] && exit
 
 . /lib/functions.sh
@@ -42,18 +40,25 @@ is_hna_net() {
 
 	config_load olsrd
 	#echo HNAs: $Hna4_list
-	config_get hna_net $Hna4_list netaddr
-	config_get hna_mask $Hna4_list netmask
-	#echo HNA4-net: $hna_net / $hna_mask
-	eval  $(/bin/ipcalc.sh ${hna_net} ${hna_mask})
-	hna_prefix=${PREFIX}
-	log "ip of HNA4: $hna_net/$hna_prefix"
-
-	if [ "$IF_NET" = "$hna_net/$hna_prefix" ]; then
-		#echo found HNA
-		log "This is an HNA"
-		return 1
+	if [ -z "$Hna4_list" ]; then
+		log "Empty Hna4_list - nothing to do."
+		return 0
 	fi
+
+	for hna_item in $Hna4_list; do
+		config_get hna_net $hna_item netaddr
+		config_get hna_mask $hna_item netmask
+		#echo HNA4-net: $hna_net / $hna_mask
+		eval  $(/bin/ipcalc.sh ${hna_net} ${hna_mask})
+		hna_prefix=${PREFIX}
+		log "ip of HNA4: $hna_net/$hna_prefix"
+
+		if [ "$IF_NET" = "$hna_net/$hna_prefix" ]; then
+			#echo found HNA
+			log "This is an HNA"
+			return 1
+		fi
+	done
 }
 
 add_hna_routing() {
