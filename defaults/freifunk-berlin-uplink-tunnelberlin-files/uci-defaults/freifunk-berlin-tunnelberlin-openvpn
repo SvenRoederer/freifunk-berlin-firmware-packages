@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # always set correct masquerading, regardless of guard
-uci set firewall.zone_ffvpn.masq=1
+uci set firewall.zone_ffuplink.masq=1
 uci commit firewall
 
 . /lib/functions/guard.sh
