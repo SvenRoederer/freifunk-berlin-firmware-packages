@@ -1,0 +1,18 @@
+#!/usr/bin/lua
+
+require('luci.ip')
+
+if (#arg ~= 2) then
+  io.stderr:write('usage: cidr_contains cidr-range (cidr-address|cidr-range)\n')
+  os.exit(10)
+end
+
+net1=arg[1]
+net2=arg[2]
+
+if (luci.ip.new(net1):contains(net2)) then
+ print('true')
+else
+ print ('false')
+ os.exit(1)
+end
