@@ -9,7 +9,7 @@ log() {
 	logger -t ff-policyrouting-ng "$1"
 }
 
-# returns network-address and prefix for device
+# returns first network-address and prefix for device
 # $1 variable for result
 # $2 device (LAN, wan, ...)
 get_net_of_interface() {
@@ -18,6 +18,16 @@ get_net_of_interface() {
 	network_get_subnet net ${2}
 	eval $(/bin/ipcalc.sh $net)
 	eval "${1}=$NETWORK/$PREFIX"
+}
+
+# returns network-addresses and prefixes for device
+# $1 variable for result (list of CDIRs)
+# $2 device (LAN, wan, ...)
+get_nets_of_interface() {
+        local nets
+
+        network_get_subnets nets ${2}
+        eval "${1}='$nets'"
 }
 
 # put all HNA4 UCI-sections into global variable Hna4_list
