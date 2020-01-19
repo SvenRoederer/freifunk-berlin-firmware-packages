@@ -83,9 +83,9 @@ add_hna_routing() {
 		log "route needs to be added"
 		$cmd
 		if [ "$?" = 0 ]; then
-			log -s "Added route: $cmd"
+			log "Added route: $cmd"
 		else
-			log -s "Error! Could not add route: $cmd"
+			log "Error! Could not add route: $cmd"
 		fi
 	else
 		log "correct routing-entry was already setup"
