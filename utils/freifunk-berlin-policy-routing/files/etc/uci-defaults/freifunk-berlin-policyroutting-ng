@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# add routing tables
+tables="/etc/iproute2/rt_tables"
+grep -q "113 olsr-hnas" $tables || echo "113 olsr-hnas" >> $tables
