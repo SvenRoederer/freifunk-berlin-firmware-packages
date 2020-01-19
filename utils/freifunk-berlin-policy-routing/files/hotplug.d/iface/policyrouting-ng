@@ -44,9 +44,9 @@ get_HNAnets() {
 }
 
 is_hna_net() {
-	log "checking if $1 is HNA-network"
-
-	log "ip of $DEVICE: $IF_NET"
+	local net=${1}
+	
+	log "testing if $net is HNA-network"
 
 	config_load olsrd
 	#echo HNAs: $Hna4_list
@@ -61,14 +61,15 @@ is_hna_net() {
 		#echo HNA4-net: $hna_net / $hna_mask
 		eval  $(/bin/ipcalc.sh ${hna_net} ${hna_mask})
 		hna_prefix=${PREFIX}
-		log "ip of HNA4: $hna_net/$hna_prefix"
+		log " ip of HNA4: $hna_net/$hna_prefix"
 
-		if [ "$IF_NET" = "$hna_net/$hna_prefix" ]; then
+		if cidr_contains >/dev/null "$hna_net/$hna_prefix" "$net"; then
 			#echo found HNA
-			log "This is an HNA"
+			log " This is an HNA"
 			return 1
 		fi
 	done
+	log " This interface don't belong to a HNA4"
 }
 
 add_hna_routing() {
@@ -109,7 +110,7 @@ get_HNAnets
 
 if [ "$ACTION" = "ifup" ] && [ "$enable" = "1" ]; then
 	log "policyrouting running"
-	is_hna_net ${INTERFACE}
+	is_hna_net ${IF_NET}
 	if [ ! $? = 0  ]; then
 		log "interface ${INTERFACE} is a HNA-net, ensure correct routing for it ..."
 		add_hna_routing $IF_NET $DEVICE
