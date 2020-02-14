@@ -1,18 +1,19 @@
 #!/bin/sh
 
-range=$1
-subrange=$2
+range=$1      # 10.10.10.1/24
+subrange=$2   # 10.10.10.20/30
+
 eval $(/bin/ipcalc.sh $range)
-range_net=$NETWORK
-range_prefix=$PREFIX
+range_net=$NETWORK       # 10.10.10.0
+range_prefix=$PREFIX     # 24
 
-subrange_addr=$(echo $subrange | cut -d / -f 1)
+subrange_addr=$(echo $subrange | cut -d / -f 1)       # 10.10.10.20
 eval $(/bin/ipcalc.sh $subrange_addr/$range_prefix)
-subrange_net=$NETWORK
-
-if [ $range_net = $subnet_net ]; then
-  echo true
-else
-  echo false
-  exit 1
-fi
+subrange_net=$NETWORK    # 10.10.10.0              
+                                                   
+if [ $range_net = $subrange_net ]; then
+  echo true                            
+else                         
+  echo false                           
+  exit 1                               
+fi                                     
