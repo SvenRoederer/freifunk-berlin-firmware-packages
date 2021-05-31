@@ -1,4 +1,10 @@
 <%
+  -- remove landingpage redirection of luci-mod-freifunk before final reboot
+  local uci = require "luci.model.uci".cursor()
+  uci:set('freifunk', 'luci', 'redirect_landingurl', '')
+  uci:commit('freifunk', 'luci')
+  uci:save('freifunk')
+
   luci.sys.reboot()
 %>
 
