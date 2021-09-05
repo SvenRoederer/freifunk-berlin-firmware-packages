@@ -20,4 +20,9 @@ uci set network.tunl0=interface
 uci set network.tunl0.ifname=tunl0
 uci set network.tunl0.proto=none
 
+# ignore the ffuplink interface when setting up the freifunk policyrouting
+# it's just a 2nd uplink
+uci add_list freifunk-policyrouting.pr.ignore_interface=ffuplink
+
 uci commit network
+uci commit freifunk-policyrouting.pr

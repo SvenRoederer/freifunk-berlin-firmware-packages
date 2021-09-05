@@ -1,9 +1,10 @@
 #!/bin/sh
 
-[ "$INTERFACE" = wan ] && exit
-
 . /lib/functions.sh
 . /lib/functions/network.sh
+
+IGNORE_INTERFACES=$(uci get freifunk-policyrouting.pr.ignore_interface)
+list_contains IGNORE_INTERFACES $INTERFACE && exit
 
 log() {
 	logger -t ff-policyrouting-ng "$1"
