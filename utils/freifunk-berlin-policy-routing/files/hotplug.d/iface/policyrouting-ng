@@ -19,26 +19,24 @@ get_nets_of_interface() {
         eval "${1}='$nets'"
 }
 
-# put all HNA4 UCI-sections into global variable Hna4_list
-get_HNAnets() {
+# returns True (1) when supplied network is part of a HNA-range
+# $1 CIDR of network to test
+is_hna_net() {
+	local net=${1}
+	local Hna4_list
+	
+	log "testing if $net is HNA-network"
+
+	# lookup the UCI-sections for IPv4-HNAs when reading the UCI-file
 	config_cb() {
 		local type="$1"
 		local name="$2"
 
 		if [ "$type" = "Hna4" ]; then
-			echo "is Hna4 ($name)"
 			Hna4_list="${Hna4_list} ${name}"
 		fi
-	}
-}
-
-is_hna_net() {
-	local net=${1}
-	
-	log "testing if $net is HNA-network"
-
 	config_load olsrd
-	#echo HNAs: $Hna4_list
+
 	if [ -z "$Hna4_list" ]; then
 		log "Empty Hna4_list - nothing to do."
 		return 0
@@ -95,7 +93,6 @@ export Hna4_list=""
 export IF_NETS=""
 
 get_nets_of_interface IF_NETS ${INTERFACE}
-get_HNAnets
 
 if [ "$ACTION" = "ifup" ] && [ "$enable" = "1" ]; then
 	log "policyrouting running"
