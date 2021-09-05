@@ -9,17 +9,6 @@ log() {
 	logger -t ff-policyrouting-ng "$1"
 }
 
-# returns first network-address and prefix for device
-# $1 variable for result
-# $2 device (LAN, wan, ...)
-get_net_of_interface() {
-	local net
-
-	network_get_subnet net ${2}
-	eval $(/bin/ipcalc.sh $net)
-	eval "${1}=$NETWORK/$PREFIX"
-}
-
 # returns network-addresses and prefixes for device
 # $1 variable for result (list of CDIRs)
 # $2 device (LAN, wan, ...)
@@ -105,7 +94,7 @@ config_get zones pr zones
 export Hna4_list=""
 export IF_NETS=""
 
-get_nets_of_interface IF_NET ${INTERFACE}
+get_nets_of_interface IF_NETS ${INTERFACE}
 get_HNAnets
 
 if [ "$ACTION" = "ifup" ] && [ "$enable" = "1" ]; then
