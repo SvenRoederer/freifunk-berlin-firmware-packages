@@ -105,6 +105,7 @@ if [ "$ACTION" = "ifup" ] && [ "$enable" = "1" ]; then
 		is_hna_net ${net}
 		if [ ! $? = 0  ]; then
 			log "interface ${INTERFACE} is a HNA-net, ensure correct routing for it ..."
+			network_get_physdev DEVICE ${INTERFACE}
 			add_hna_routing $net $DEVICE
 		fi
 	done
