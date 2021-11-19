@@ -4,7 +4,7 @@
 tables="/etc/iproute2/rt_tables"
 grep -q "113 olsr-hnas" $tables || echo "113 olsr-hnas" >> $tables
 
-uci add network.olsr_hna=rule
-uci add network.olsr_hna.priority='9000'
-uci add network.olsr_hna.lookup='olsr-hnas'
+uci set network.olsr_hna=rule
+uci set network.olsr_hna.priority='9000'
+uci set network.olsr_hna.lookup='olsr-hnas'
 uci commit network.olsr_hna
