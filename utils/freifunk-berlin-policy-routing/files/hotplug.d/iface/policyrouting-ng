@@ -36,6 +36,7 @@ is_hna_net() {
 		if [ "$type" = "Hna4" ]; then
 			Hna4_list="${Hna4_list} ${name}"
 		fi
+	}
 	config_load olsrd
 
 	if [ -z "$Hna4_list" ]; then
